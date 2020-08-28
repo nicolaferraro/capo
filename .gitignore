@@ -1,0 +1,9 @@
+/.vscode
+.project
+.metadata
+*.iml
+/.idea
+
+.bashrc
+
+/capo
