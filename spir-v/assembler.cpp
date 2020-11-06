@@ -64,34 +64,33 @@ int main() {
   if (!core.Validate(spirv)) return 1;
 
   std::ofstream f;
-  f.open("my.bin",std::ofstream::binary);
+  f.open("module.spv",std::ofstream::binary);
   for (const uint32_t e : spirv) f.write((char*)&e,sizeof(uint32_t));
-  f.flush();
   f.close();
 
-  /*  
-  std::ifstream fin("my.bin", std::ios::in | std::ios::binary);
+    
+  std::ifstream fin("module.spv", std::ios::in | std::ios::binary);
   if (!fin.is_open()) {
     return 1;
   }
   fin.unsetf(std::ios::skipws);
-  fin.seekg(0, std::ios::beg);
   
   std::vector<uint32_t> fileSpirv;
-  fileSpirv.reserve(spirv.size());
-  fileSpirv.insert(fileSpirv.begin(), std::istream_iterator<uint32_t>(fin), std::istream_iterator<uint32_t>());
-  //fin.close();
-
-  printf("D: %d vs. %d\n", spirv.size(), fileSpirv.size());
-
-  for (int i = 0 ; i< spirv.size(); i++) {
-    printf("D: %d vs. %d\n", spirv[i], fileSpirv[i]);
-  }
-
-  */
+  do {
+    uint32_t val;
+    if(!fin.read((char*)&val, sizeof(uint32_t))) {
+      if (fin.eof()) {
+        break;
+      }
+      return 1;
+    } else {
+      fileSpirv.insert(fileSpirv.end(), val);
+    }
+  } while(true);
+  fin.close();
 
   std::string disassembly;
-  if (!core.Disassemble(spirv, &disassembly)) return 1;
+  if (!core.Disassemble(fileSpirv, &disassembly)) return 1;
   std::cout << disassembly << "\n";
 
   return 0;
